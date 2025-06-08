@@ -1,0 +1,17 @@
+(define-syntax test
+  (syntax-rules ()
+    ((_ expression value)
+     (list 'expression value))))
+(define (run-tests tests)
+  (define (run-test _test)
+    (let vars ((result (eval (car _test) (interaction-environment))))
+      (if (equal? result (cadr _test))
+          (begin (display (car _test)) (display " ok")(newline) #t)
+          (begin (display (car _test)) (display " FAIL")(newline)
+                 (display "  Expected: ") (display (cadr _test)) (newline)
+                 (display "  Returned: ") (display result) (newline) #f))))
+  (define (_iter tests result)
+    (if (null? tests)
+        result
+        (_iter (cdr tests) (and (run-test (car tests)) result))))
+  (_iter tests #t))
